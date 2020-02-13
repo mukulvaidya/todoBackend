@@ -13,7 +13,7 @@ export default class DbRepositoryImpl implements dbRepository {
   
   public async find(): Promise<Todo[]> {
     const list1 = await this.repository.find();
-    return list1;
+    return list1; 
   }
   public async findById(id: number): Promise<Todo> {
     const todo = await this.repository.findOne(id);
