@@ -12,9 +12,9 @@ export default class Todo {
   @Column()
   description: string;
 
-  @Column({ name: "Due Date" })
+  @Column({ name: "Due Date"})
   dueDate: Date;
 
   @Column()
-  isComplete: boolean;
+  status: Boolean;
 }

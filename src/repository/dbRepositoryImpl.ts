@@ -1,16 +1,16 @@
-import 'reflect-metadata'
-import { getRepository, UpdateQueryBuilder } from "typeorm";
+import "reflect-metadata";
+import { getRepository } from "typeorm";
 import dbRepository from "./dbrepository";
 import { Todo } from "../todo";
 import { inject, injectable, unmanaged } from "inversify";
-import { response } from 'express';
+import { response } from "express";
 
 @injectable()
 export default class DbRepositoryImpl implements dbRepository {
-  private repository = getRepository<Todo>('Todo');
-  constructor(@inject("DbRepository") repository:any, @unmanaged() entityClass?: string){};//  constructor( @inject('TodoService') private service: TodoService) { }
+  private repository = getRepository<Todo>("Todo");
+  constructor(
+  ) {} //  constructor( @inject('TodoService') private service: TodoService) { }
 
-  
   public async find(): Promise<Todo[]> {
     const list1 = await this.repository.find();
     return list1;
@@ -19,10 +19,11 @@ export default class DbRepositoryImpl implements dbRepository {
     const todo = await this.repository.findOne(id);
     return todo;
   }
-  public async create(body: Todo): Promise<void> {
-    try{
-    await this.repository.save(body);
-    } catch(err){
+  public async create(body: Todo): Promise<Todo> {
+    try {
+      const todo = await this.repository.save(body);
+      return todo;
+    } catch (err) {
       console.log(err);
     }
   }
@@ -30,8 +31,12 @@ export default class DbRepositoryImpl implements dbRepository {
     const todoid = await this.repository.delete(id);
     response.send(todoid);
   }
-  public async complete(id:number):Promise<Todo>{
-    this.repository.createQueryBuilder().update(Todo).set({isComplete:true}).where("id = :id",{id})
-    return await this.repository.findOne(id);
+  public async complete(id: number): Promise<any> {
+    const update = await this.repository
+      .createQueryBuilder()
+      .update(Todo)
+      .set({ status: true })
+      .where("id = :id", { id }).execute();
+    return update.affected;
   }
 }

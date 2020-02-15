@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import DbInterface from "./dbInterface";
-import { Connection, createConnection, getConnectionOptions } from "typeorm";
+import { Connection, createConnection } from "typeorm";
 import { injectable } from "inversify";
 
 @injectable()

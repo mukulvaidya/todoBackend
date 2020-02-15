@@ -39,14 +39,14 @@ export default class TodoController {
       title = "",
       description = "",
       dueDate = "",
-      isComplete
+      status= ""
     } = req.body;
     try {
       const todo = await this.service.createTodo({
         title,
         description,
         dueDate,
-        isComplete
+        status
       });
       res.send(todo);
     } catch (err) {
@@ -68,10 +68,12 @@ export default class TodoController {
   @httpPut('/complete/:id')
   public async updateTodo(req:express.Request,res:express.Response){
     const {id} = req.params;
+    const data = req.body.status;
+    console.log(data);
     try {
          await this.service.complete(parseInt(id));
     } catch (error) {
-        throw new Error(`Error during update`)
+        throw new Error(`Error during update in ctrl`+error)
     }
   }
 }

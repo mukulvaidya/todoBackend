@@ -9,10 +9,10 @@ import DbRepositoryImpl from "../repository/dbRepositoryImpl";
 
 @injectable()
 export default class TodoServiceImpl implements TodoService {
-  private dbRepo: dbRepository;
+  public dbRepo: dbRepository;
 
   constructor(
-    @inject("dbRepository") factory: (dbRepo: string) => dbRepository
+    @inject("dbRepository") factory: (dbEntity: string) => dbRepository
   ) {
     this.dbRepo = factory("Todo");
   }
@@ -29,9 +29,10 @@ export default class TodoServiceImpl implements TodoService {
   }
 
   @Transactional()
-  public async createTodo(body: Todo): Promise<void> {
+  public async createTodo(body: Todo): Promise<Todo> {
     try {
-      await this.dbRepo.create(body);
+      const todo = await this.dbRepo.create(body);
+      return todo;
     } catch (err) {
       console.log(err);
     }
@@ -45,39 +46,46 @@ export default class TodoServiceImpl implements TodoService {
     } catch (error) {}
   }
 
-  public async sendMail(list:any) {
+  public async sendMail(list: any) {
     let gmailService = new GMailService();
-    function convertToIst():Date {
+    // let dbRepo = new DbRepositoryImpl(list)
+    function convertToIst(): Date {
       const dateIST = new Date();
-        dateIST.setHours(dateIST.getHours() + 5);
-        dateIST.setMinutes(dateIST.getMinutes() + 30);
+      dateIST.setHours(dateIST.getHours() + 5);
+      dateIST.setMinutes(dateIST.getMinutes() + 30);
       return dateIST;
     }
-    let interval = setInterval(() => {
-      let count = true;
-      if (count) {
-        const dateIST = convertToIst();
-        list.forEach(async function(element) {
-          if (element.dueDate < dateIST) {
-            if (element.isComplete === false) {
-              await gmailService.sendMail(
-                `mukul.vaidya11@gmail.com`,
-                `Todo Expired`,
-                `Todo with id:${element.id} Expired`
-              );
-              count = false;
-            }
-          } else {
-            interval.unref();
-          }
-        });
-      }
-    }, 10000);
+
+    let interval = setInterval((dbRepo) => {
+      let count = 0;
+      const dateIST = convertToIst();
+      list.forEach(async function(element) {
+        if (
+          (count <=5) &&
+          (element.dueDate < dateIST )&&
+          (!element.status)
+        ) {
+          await gmailService.sendMail(
+            `mukul.vaidya11@gmail.com`,
+            `Todo Expired`,
+            `Todo with id:${element.id} Expired`
+          );
+          await dbRepo.complete(element.id);
+          count++;
+        } else {
+          clearInterval(interval)
+        }
+      });
+    }, 3600 ,this.dbRepo);
   }
 
   @Transactional()
-  public async complete(id:number):Promise<number>{
-    await this.dbRepo.complete(id);
-    return id;
+  public async complete(id: number): Promise<any> {
+    try {
+      await this.dbRepo.complete(id);
+      return id;
+    } catch (error) {
+      throw new Error(`Error in update service ${error}`);
+    }
   }
 }
