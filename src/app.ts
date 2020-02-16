@@ -5,6 +5,5 @@ const app = new App();
 app
   .start()
   .catch(err =>{
-   console.log(err);
-  //app.stop();
+   app.stop();
   });

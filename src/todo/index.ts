@@ -1,9 +1,4 @@
-import Todo from './todo-entity'
+import Todo from "./todo-entity";
 
-const entities = [
-    Todo
-]
-export {
-    entities,
-    Todo
-}
+const entities = [Todo];
+export { entities, Todo };

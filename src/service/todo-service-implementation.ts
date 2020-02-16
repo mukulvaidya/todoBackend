@@ -45,12 +45,12 @@ export default class TodoServiceImpl implements TodoService {
     } catch (error) {}
   }
 
-  public async sendMail(list:any) {
+  public async sendMail(list: any) {
     let gmailService = new GMailService();
-    function convertToIst():Date {
+    function convertToIst(): Date {
       const dateIST = new Date();
-        dateIST.setHours(dateIST.getHours() + 5);
-        dateIST.setMinutes(dateIST.getMinutes() + 30);
+      dateIST.setHours(dateIST.getHours() + 5);
+      dateIST.setMinutes(dateIST.getMinutes() + 30);
       return dateIST;
     }
     let interval = setInterval(() => {
@@ -76,7 +76,7 @@ export default class TodoServiceImpl implements TodoService {
   }
 
   @Transactional()
-  public async complete(id:number):Promise<number>{
+  public async complete(id: number): Promise<number> {
     await this.dbRepo.complete(id);
     return id;
   }

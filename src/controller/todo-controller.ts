@@ -1,15 +1,18 @@
-import 'reflect-metadata'
+import "reflect-metadata";
 import {
-  controller, httpGet, httpPost, httpPut, httpDelete
-} from 'inversify-express-utils';
+  controller,
+  httpGet,
+  httpPost,
+  httpPut,
+  httpDelete
+} from "inversify-express-utils";
 import express from "express";
 import TodoService from "../service/todo-service";
 import { inject, injectable } from "inversify";
 
-
 @controller("/todo")
 export default class TodoController {
-  constructor( @inject('TodoService') private service: TodoService) { }
+  constructor(@inject("TodoService") private service: TodoService) {}
 
   @httpGet("/all")
   public async getAllTodos(req: express.Request, res: express.Response) {
@@ -35,12 +38,7 @@ export default class TodoController {
 
   @httpPost("/createTodo")
   public async createTodo(req: express.Request, res: express.Response) {
-    const {
-      title = "",
-      description = "",
-      dueDate = "",
-      isComplete
-    } = req.body;
+    const { title = "", description = "", dueDate = "", isComplete } = req.body;
     try {
       const todo = await this.service.createTodo({
         title,
@@ -65,13 +63,13 @@ export default class TodoController {
     }
   }
 
-  @httpPut('/complete/:id')
-  public async updateTodo(req:express.Request,res:express.Response){
-    const {id} = req.params;
+  @httpPut("/complete/:id")
+  public async updateTodo(req: express.Request, res: express.Response) {
+    const { id } = req.params;
     try {
-         await this.service.complete(parseInt(id));
+      await this.service.complete(parseInt(id));
     } catch (error) {
-        throw new Error(`Error during update`)
+      throw new Error(`Error during update`);
     }
   }
 }
