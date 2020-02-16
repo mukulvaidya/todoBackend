@@ -8,7 +8,7 @@ import bodyParser = require("body-parser");
 import cors from "cors";
 import { InversifyExpressServer } from "inversify-express-utils";
 import helmet = require("helmet");
-import "./controller";
+import './controller'
 
 export default class App {
   private container: Container;
@@ -32,10 +32,10 @@ export default class App {
       theApp.use(helmet());
     });
     let app = server.build();
-    app.listen(3000);
-    console.log("Server started on port http://localhost:3000/");
+      app.listen(3000);
+      console.log("Server started on port http://localhost:3000/");
 
-    exports = module.exports = app;
+      exports = module.exports = app;
   }
 
   public async stop() {

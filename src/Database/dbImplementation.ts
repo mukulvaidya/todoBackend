@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import DbInterface from "./dbInterface";
-import { Connection, createConnection } from "typeorm";
+import { Connection, createConnection, getConnectionOptions } from "typeorm";
 import { injectable } from "inversify";
 
 @injectable()
@@ -8,10 +8,11 @@ export default class DbImplementation implements DbInterface {
   private conn: Connection;
   public async init(): Promise<void> {
     try {
+      console.log("Creating tables");
       this.conn = await createConnection();
-      console.log("connection with database done");
     } catch (error) {
-      throw new Error(`Database connection failed ${error}`);
+      console.log(error);
+      throw new Error(`Database connection failed`);
     }
   }
 
@@ -21,7 +22,7 @@ export default class DbImplementation implements DbInterface {
         return await this.conn.close();
       }
     } catch (error) {
-      throw new Error(`Error in closing database connection ${error}`);
+      throw new Error(`Error in closing database connection`);
     }
   }
 

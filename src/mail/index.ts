@@ -1,3 +1,5 @@
-import GMailService from "./mail";
+import GMailService from './mail'
 
-export { GMailService };
+export{
+    GMailService
+}

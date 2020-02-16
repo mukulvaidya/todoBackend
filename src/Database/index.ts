@@ -3,10 +3,10 @@ import DbInterface from "./dbInterface";
 import { ContainerModule } from "inversify";
 import containerInitialization from "../inversifyConfig";
 
-const databaseModule = new ContainerModule(bind => {
+const dbModule = new ContainerModule(bind => {
   bind<DbInterface>("DbInterface")
     .to(DbImplementation)
     .inSingletonScope();
 });
 
-export { databaseModule, DbInterface, DbImplementation, containerInitialization };
+export { dbModule, DbInterface, DbImplementation, containerInitialization };

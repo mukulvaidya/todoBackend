@@ -2,6 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 
 @Entity()
 export default class Todo {
+  
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -15,5 +16,5 @@ export default class Todo {
   dueDate: Date;
 
   @Column()
-  status: Boolean;
+  isComplete: boolean;
 }
