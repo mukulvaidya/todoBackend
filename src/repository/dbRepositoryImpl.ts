@@ -2,41 +2,55 @@ import "reflect-metadata";
 import { getRepository } from "typeorm";
 import dbRepository from "./dbrepository";
 import { Todo } from "../todo";
-import { inject, injectable, unmanaged } from "inversify";
+import { injectable } from "inversify";
 import { response } from "express";
 
 @injectable()
 export default class DbRepositoryImpl implements dbRepository {
   private repository = getRepository<Todo>("Todo");
-  constructor(
-  ) {} //  constructor( @inject('TodoService') private service: TodoService) { }
-
   public async find(): Promise<Todo[]> {
-    const list1 = await this.repository.find();
-    return list1;
+    try {
+      const list = await this.repository.find();
+      return list;
+    } catch (error) {
+      throw new Error(error);
+    }
   }
   public async findById(id: number): Promise<Todo> {
-    const todo = await this.repository.findOne(id);
-    return todo;
+    try {
+      const todo = await this.repository.findOne(id);
+      return todo;
+    } catch (error) {
+      throw new Error(error);
+    }
   }
   public async create(body: Todo): Promise<Todo> {
     try {
       const todo = await this.repository.save(body);
       return todo;
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      throw new Error(error);
     }
   }
   public async delete(id: number): Promise<any> {
-    const todoid = await this.repository.delete(id);
-    response.send(todoid);
+    try {
+      const todoid = await this.repository.delete(id);
+      response.send(todoid);
+    } catch (error) {
+      throw new Error(error);
+    }
   }
   public async complete(id: number): Promise<any> {
-    const update = await this.repository
-      .createQueryBuilder()
-      .update(Todo)
-      .set({ status: true })
-      .where("id = :id", { id }).execute();
-    return update.affected;
+    try {
+      const update = await this.repository
+        .createQueryBuilder()
+        .update(Todo)
+        .set({ status: true })
+        .where("id = :id", { id })
+        .execute();
+      return update.affected;
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 }

@@ -2,7 +2,6 @@ import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 
 @Entity()
 export default class Todo {
-  
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -12,7 +11,7 @@ export default class Todo {
   @Column()
   description: string;
 
-  @Column({ name: "Due Date"})
+  @Column({ name: "Due Date" })
   dueDate: Date;
 
   @Column()

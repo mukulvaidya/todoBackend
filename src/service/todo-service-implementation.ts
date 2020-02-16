@@ -5,27 +5,34 @@ import { Todo } from "../todo";
 import { inject, injectable } from "inversify";
 import { Transactional } from "typeorm-transactional-cls-hooked";
 import { GMailService } from "../mail";
-import DbRepositoryImpl from "../repository/dbRepositoryImpl";
 
 @injectable()
 export default class TodoServiceImpl implements TodoService {
   public dbRepo: dbRepository;
 
   constructor(
-    @inject("dbRepository") factory: (dbEntity: string) => dbRepository
+    @inject("dbRepository") repo: (databaseEntity: string) => dbRepository
   ) {
-    this.dbRepo = factory("Todo");
+    this.dbRepo = repo("Todo");
   }
   @Transactional()
   public async getTodo(): Promise<Todo[]> {
-    const list = await this.dbRepo.find();
-    return list;
+    try {
+      const list = await this.dbRepo.find();
+      return list;
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 
   @Transactional()
   public async getById(id: number): Promise<Todo> {
-    const todo = await this.dbRepo.findById(id);
-    return todo;
+    try {
+      const todo = await this.dbRepo.findById(id);
+      return todo;
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 
   @Transactional()
@@ -43,12 +50,13 @@ export default class TodoServiceImpl implements TodoService {
     try {
       const todo = await this.dbRepo.delete(id);
       return todo;
-    } catch (error) {}
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 
   public async sendMail(list: any) {
     let gmailService = new GMailService();
-    // let dbRepo = new DbRepositoryImpl(list)
     function convertToIst(): Date {
       const dateIST = new Date();
       dateIST.setHours(dateIST.getHours() + 5);
@@ -56,27 +64,33 @@ export default class TodoServiceImpl implements TodoService {
       return dateIST;
     }
 
-    let interval = setInterval((dbRepo) => {
-      let count = 0;
-      const dateIST = convertToIst();
-      list.forEach(async function(element) {
-        if (
-          (count <=5) &&
-          (element.dueDate < dateIST )&&
-          (!element.status)
-        ) {
-          await gmailService.sendMail(
-            `mukul.vaidya11@gmail.com`,
-            `Todo Expired`,
-            `Todo with id:${element.id} Expired`
-          );
-          await dbRepo.complete(element.id);
-          count++;
-        } else {
-          clearInterval(interval)
-        }
-      });
-    }, 3600 ,this.dbRepo);
+    let interval = setInterval(
+      dbRepo => {
+        let taskStatus = true;
+        const dateIST = convertToIst();
+        list.forEach(async function(element) {
+          if (
+            taskStatus &&
+            element.dueDate < dateIST &&
+            element.status !== true
+          ) {
+            try {
+              await gmailService.sendMail(
+                `mukul.vaidya11@gmail.com`,
+                `Todo Expired`,
+                `Todo with id:${element.id} Expired`
+              );
+              await dbRepo.complete(element.id);
+              element.status = true;
+            } catch (error) {
+              throw new Error(error);
+            }
+          }
+        });
+      },
+      3600,
+      this.dbRepo
+    );
   }
 
   @Transactional()
