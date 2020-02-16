@@ -8,11 +8,10 @@ export default class DbImplementation implements DbInterface {
   private conn: Connection;
   public async init(): Promise<void> {
     try {
-      console.log("Creating tables");
       this.conn = await createConnection();
+      console.log("connection with database done");
     } catch (error) {
-      console.log(error);
-      throw new Error(`Database connection failed`);
+      throw new Error(`Database connection failed ${error}`);
     }
   }
 
@@ -22,7 +21,7 @@ export default class DbImplementation implements DbInterface {
         return await this.conn.close();
       }
     } catch (error) {
-      throw new Error(`Error in closing database connection`);
+      throw new Error(`Error in closing database connection ${error}`);
     }
   }
 

@@ -1,9 +1,9 @@
 import * as nodemailer from "nodemailer";
 
 export default class GMailService {
-  private _transporter: nodemailer.Transporter;
+  private transporter: nodemailer.Transporter;
   constructor() {
-    this._transporter = nodemailer.createTransport(
+    this.transporter = nodemailer.createTransport(
       `smtps://mukul.vaidya11@gmail.com:mukul@9671@smtp.gmail.com`
     );
   }
@@ -15,9 +15,10 @@ export default class GMailService {
       text: content
     };
 
+    // Promisify the sendMail function
     return new Promise<void>(
       (resolve: (msg: any) => void, reject: (err: Error) => void) => {
-        this._transporter.sendMail(options, (error, info) => {
+        this.transporter.sendMail(options, (error:Error, info:any) => {
           if (error) {
             console.log(`error: ${error}`);
             reject(error);

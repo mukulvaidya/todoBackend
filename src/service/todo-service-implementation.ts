@@ -55,8 +55,11 @@ export default class TodoServiceImpl implements TodoService {
     }
   }
 
+  //Method For sending mail after Todo is expired
   public async sendMail(list: any) {
     let gmailService = new GMailService();
+
+    // Function for converting date from UTC format to IST format
     function convertToIst(): Date {
       const dateIST = new Date();
       dateIST.setHours(dateIST.getHours() + 5);
@@ -64,6 +67,7 @@ export default class TodoServiceImpl implements TodoService {
       return dateIST;
     }
 
+    // setInterval function to check the Expiry of Todo after every one minute
     let interval = setInterval(
       dbRepo => {
         let taskStatus = true;
@@ -93,6 +97,7 @@ export default class TodoServiceImpl implements TodoService {
     );
   }
 
+  // Method to mark a task as completed
   @Transactional()
   public async complete(id: number): Promise<any> {
     try {
